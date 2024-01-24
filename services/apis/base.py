@@ -44,11 +44,13 @@ class BaseClient:
             self,
             method: str,
             url: str | URL,
+            headers: Mapping[str, str] | None = None,
             params: Mapping[str, str] | None = None,
             json: Mapping[str, str] | None = None,
     ) -> tuple[int, dict[str, Any]]:
         """Make request and return decoded json response."""
         session = await self._get_session()
+        session.headers.update(headers or {})
 
         self.log.debug(
             "Making request %r %r with json %r and params %r",
