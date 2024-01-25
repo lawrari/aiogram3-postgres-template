@@ -14,11 +14,11 @@ function Read-WithDefault {
 # Get user input
 $db_url_default = "localhost"
 $db_default_port = "5432"
-$db_url = Read-WithDefault "Enter the URL of your database (default: localhost)" $db_url_default
-$db_port = Read-WithDefault "Enter the port of your database (default: 5432)" $db_default_port
-$db_user = Read-WithDefault "Enter the PostgreSQL username (default: postgres)" "postgres"
+$db_url = Read-WithDefault "Enter the URL of your database" $db_url_default
+$db_port = Read-WithDefault "Enter the port of your database" $db_default_port
+$db_user = Read-WithDefault "Enter the PostgreSQL username" "postgres"
 $db_password = Read-Host -Prompt "Enter the PostgreSQL password" -AsSecureString
-$db_name = Read-WithDefault "Enter the database name (default: postgres)" "postgres"
+$db_name = Read-WithDefault "Enter the database name" "postgres"
 
 # Convert secure string to plain text for URL construction
 $db_password_plain = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($db_password))
