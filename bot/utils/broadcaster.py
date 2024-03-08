@@ -7,6 +7,7 @@ from aiogram import exceptions
 from aiogram.types import InlineKeyboardMarkup
 
 
+# another one
 async def send_message(
         bot: Bot,
         user_id: Union[int, str],
