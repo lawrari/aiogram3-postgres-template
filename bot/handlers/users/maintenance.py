@@ -10,4 +10,4 @@ maintenance_router.callback_query.filter(MaintenanceFilter())
 
 @maintenance_router.message()
 async def maintenance_mode(message: Message):
-    await message.reply(f'Bot is in maintenance mode right now!')
+    await message.reply(f'Bot is in maintenance mode right now! Try Later')
