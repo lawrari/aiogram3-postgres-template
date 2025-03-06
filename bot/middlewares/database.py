@@ -19,12 +19,10 @@ class DatabaseMiddleware(BaseMiddleware):
         async with self.session_pool() as session:
             repo = RequestsRepo(session)
 
-            user = await repo.users.get_or_create_user(
+            user = await repo.users.get_or_create_user_and_profile(
                 telegram_id=event.from_user.id,
                 username=event.from_user.username,
                 full_name=event.from_user.full_name,
-                status="active",
-                role="user",
                 language=event.from_user.language_code,
             )
 

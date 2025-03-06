@@ -3,38 +3,27 @@ import logging
 
 import betterlogging as bl
 from aiogram import Bot, Dispatcher
+from aiogram.client.default import DefaultBotProperties
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.storage.redis import RedisStorage, DefaultKeyBuilder
 from aiogram.types import BotCommand
 
-from config.config import load_config, Config
-from services.database.setup import create_engine, create_session_pool
 from bot.handlers import routers_list
 from bot.middlewares.config import ConfigMiddleware
 from bot.middlewares.database import DatabaseMiddleware
 from bot.utils import broadcaster
-
+from config.config import load_config, Config
 from services.database.models import Base
+from services.database.setup import create_engine, create_session_pool
 
 
 async def on_startup(bot: Bot, admin_ids: list[int]):
     await broadcaster.broadcast(bot, admin_ids, "Bot started!")
 
-    await bot.set_my_commands(commands=[BotCommand(command='start', description='Меню')])
+    # await bot.set_my_commands(commands=[BotCommand(command='start', description='Меню')])
 
 
 def register_global_middlewares(dp: Dispatcher, config: Config, session_pool=None):
-    """
-    Register global middlewares for the given dispatcher.
-    Global middlewares here are the ones that are applied to all the handlers (you specify the type of update)
-
-    :param dp: The dispatcher instance.
-    :type dp: Dispatcher
-    :param config: The configuration object from the loaded configuration.
-    :param session_pool: Optional session pool object for the database using SQLAlchemy.
-    :return: None
-    """
-
     middleware_types = [
         ConfigMiddleware(config),
         DatabaseMiddleware(session_pool),
@@ -46,21 +35,6 @@ def register_global_middlewares(dp: Dispatcher, config: Config, session_pool=Non
 
 
 def setup_logging():
-    """
-    Set up logging configuration for the application.
-
-    This method initializes the logging configuration for the application.
-    It sets the log level to INFO and configures a basic colorized log for
-    output. The log format includes the filename, line number, log level,
-    timestamp, logger name, and log message.
-
-    Returns:
-        None
-
-    Example usage:
-        setup_logging()
-    """
-
     log_level = logging.INFO
     bl.basic_colorized_config(level=log_level)
 
@@ -73,17 +47,6 @@ def setup_logging():
 
 
 def get_storage(config):
-    """
-    Return storage based on the provided configuration.
-
-    Args:
-        config (Config): The configuration object.
-
-    Returns:
-        Storage: The storage object based on the configuration.
-
-    """
-
     if config.telegram_bot.use_redis:
         return RedisStorage.from_url(
             config.redis.dsn(),
@@ -104,7 +67,8 @@ async def main():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-    bot = Bot(token=config.telegram_bot.token, parse_mode="HTML")
+    properties = DefaultBotProperties(parse_mode="HTML")
+    bot = Bot(token=config.telegram_bot.token, properties=properties)
     dp = Dispatcher(storage=storage)
 
     dp.include_routers(*routers_list)
